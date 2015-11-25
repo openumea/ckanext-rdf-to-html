@@ -1,0 +1,49 @@
+{% ckan_extends %}
+{% block dataset_fields %}
+
+<div data-module="custom-fields">
+
+  {# We need to make sure that the dcat fields are in the form,
+     otherwise they will be deleted when save is pressed#}
+  <div style="display: none">
+  {% set no_extras = data.extras | count %}
+  {% set no_dcat = data.dcat_fields | count %}
+  {% for extra in data.dcat_fields %}
+      {% set key = '_dcat_field_' + extra.pred_link + ';' + extra.pred_title %}
+      {% set obj_list = [] %}
+      {% for obj in extra.objs %}
+        {% if obj.link %}
+          {% do obj_list.append(obj.link + ';' + obj.title) %}
+        {% else %}
+          {% do obj_list.append(';' + obj.title) %}
+        {% endif %}
+      {% endfor %}
+      {% set value = ';'.join(obj_list) %}
+        {% set prefix = 'extras__%d__' % (loop.index + no_extras + 3) %}
+        {{ form.custom(
+          names=(prefix ~ 'key', prefix ~ 'value', prefix ~ 'deleted'),
+          id='field-extras-%d' % (loop.index + no_extras + 3),
+          label=_('DCAT Field'),
+          values=(key, value, extra.deleted),
+          error=errors[prefix ~ 'key'] or errors[prefix ~ 'value']
+        ) }}
+  {% endfor %}
+  </div>
+
+  <h3>DCAT info</h3>
+    {% set index = (no_extras) + (no_dcat) + 4 %}
+    {% set key_name = 'extras__%d__key' % index %}
+    {% set value_name = 'extras__%d__value' % index %}
+    {% set key_id = 'field-extras-%d-key' % index %}
+    {% set value_id = 'field-extras-%d-value' % index %}
+    <div class="control-group control-medium">
+        <label class="control-label" for="{{key_id}}">Dcat about</label>
+        <div class="controls">
+            <input id="{{key_id}}" type="text" name="{{key_name}}" value="_dcat_about_" placeholder="" style="display: none">
+            <input id="{{value_id}}" type="text" name="{{value_name}}" value="{{data.dcat_about if data.dcat_about else '' }}" placeholder="">
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
