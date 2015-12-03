@@ -76,7 +76,7 @@ class RDFToHTMLPlugin(p.SingletonPlugin):
 
         # Add them as a separate entry in the dict
         # and remove them from the extras
-        pkg_dict['dcat_fields'] = dcat
+        pkg_dict['dcat_fields'] = sorted(dcat, key=lambda k: k['pred_title'])
         for item in to_remove:
             pkg_dict['extras'].remove(item)
 
