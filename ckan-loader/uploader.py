@@ -19,10 +19,10 @@ class RDFLoader(object):
      Args:
             filename: filename of the RDF file
     """
-    def __init__(self, filename):
+    def __init__(self, rdf_path):
         self.conv = RDFtoHTMLConverter()
         self.conv.skip_links = True
-        self.conv.load_file(filename)
+        self.conv.load_file(rdf_path)
         self.nodes = self.conv.get_nodes('en')
 
     def convert_node(self, rdf_about):
@@ -81,14 +81,14 @@ class CKANUploader(object):
             if 'dcat_about' in dataset:
                 self.mapping[dataset['dcat_about']] = name
 
-    def update_datasets(self, rdf_filename):
+    def update_datasets(self, rdf_path):
         """
         Update all datasets found when creating the object
         with data from given file
         Args:
-            rdf_filename: path to an RDF file
+            rdf_path: path to an RDF file
         """
-        loader = RDFLoader(rdf_filename)
+        loader = RDFLoader(rdf_path)
         for rdf_about, ckan_name in self.mapping.iteritems():
             node = loader.convert_node(rdf_about)
             extras = self._convert_to_extras(node['attributes'])
@@ -177,15 +177,15 @@ def main():
         os.remove(rdf_path)
 
 
-def download_file(rdf_file):
+def download_file(url):
     """
     Download an RDF file from an URL
     Args:
-        rdf_file: URL to the file
+        url: URL to the file
 
     Returns: filename of the downloaded file
     """
-    dcat = requests.get(rdf_file)
+    dcat = requests.get(url)
 
     _, filename = tempfile.mkstemp(suffix='.rdf')
     with open(filename, 'w') as file_obj:
