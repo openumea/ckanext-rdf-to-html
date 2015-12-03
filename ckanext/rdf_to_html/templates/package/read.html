@@ -2,34 +2,36 @@
 
 {% block primary_content_inner %}
   {{ super() }}
-  <section class="dcat-info">
-    <h3>DCAT Info</h3>
-    <table class="table table-striped table-bordered table-condensed">
-      <thead>
-        <tr>
-          <th scope="col">{{ _('Field') }}</th>
-          <th scope="col">{{ _('Value') }}</th>
-        </tr>
-      </thead>
-      <tbody>
+  {% if pkg.dcat_about %}
+    <section class="dcat-info">
+      <h3>DCAT Info</h3>
+      <table class="table table-striped table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th scope="col">{{ _('Field') }}</th>
+            <th scope="col">{{ _('Value') }}</th>
+          </tr>
+        </thead>
+        <tbody>
 
-      {% for extra in pkg.dcat_fields %}
-        <tr rel="dc:relation" resource="_:extra{{ i }}">
-          <th scope="row" class="dataset-label" property="rdfs:label">
-            <a href="{{extra.pred_link}}">{{extra.pred_title}}</a>
-          </th>
-          <td class="dataset-details" property="rdf:value">
-            {% for obj in extra.objs %}
-              {% if obj.link %}
-                <a href="{{ obj.link }}">{{ obj.title }}</a><br />
-              {% else %}
-                {{ obj.title | safe }}
-              {% endif %}
-            {% endfor %}
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </section>
+        {% for extra in pkg.dcat_fields %}
+          <tr rel="dc:relation" resource="_:extra{{ i }}">
+            <th scope="row" class="dataset-label" property="rdfs:label">
+              <a href="{{extra.pred_link}}">{{extra.pred_title}}</a>
+            </th>
+            <td class="dataset-details" property="rdf:value">
+              {% for obj in extra.objs %}
+                {% if obj.link %}
+                  <a href="{{ obj.link }}">{{ obj.title }}</a><br />
+                {% else %}
+                  {{ obj.title | safe }}
+                {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% endif %}
 {% endblock %}
