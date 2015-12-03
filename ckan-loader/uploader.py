@@ -102,7 +102,7 @@ class CKANUploader(object):
             'key': '_dcat_about_',
             'value': rdf_about
         })
-        current_info['extras'] = extras
+        current_info['extras'] += extras
 
         # We also need to remove the old dcat stuff
         del current_info['dcat_fields']
