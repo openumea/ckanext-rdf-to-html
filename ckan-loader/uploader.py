@@ -1,4 +1,7 @@
 import argparse
+import os
+import tempfile
+import requests
 
 import ckanapi
 from rdfconv.converter import RDFtoHTMLConverter
@@ -138,6 +141,14 @@ def main(ckan_url, api_key, rdf_file):
     uploader.update_datasets(rdf_file)
 
 
+def download_file(rdf_file):
+    dcat = requests.get(rdf_file)
+
+    _, filename = tempfile.mkstemp(suffix='.rdf')
+    with open(filename, 'w') as file_obj:
+        file_obj.write(dcat.content)
+    return filename
+
 if __name__ == '__main__':
     # Handle arguments
     parser = argparse.ArgumentParser(
@@ -154,7 +165,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args.ckan_url, args.api_key, args.rdf_file)
+    temp_file = False
+    if args.rdf_file.startswith(('http://', 'https://')):
+        rdf_path = download_file(args.rdf_file)
+        temp_file = True
+    else:
+        rdf_path = args.rdf_file
+    main(args.ckan_url, args.api_key, rdf_path)
+
+    if temp_file:
+        os.remove(rdf_path)
 
 
 
