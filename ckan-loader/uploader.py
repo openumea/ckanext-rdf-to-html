@@ -1,3 +1,8 @@
+"""
+Module containing code for uploading a human readable version of
+RDF data to a CKAN instance.
+"""
+
 import argparse
 import os
 import tempfile
@@ -11,6 +16,8 @@ class RDFLoader(object):
     """
     Class able to convert a single nodes in an RDF file to
     a simpler representation.
+     Args:
+            filename: filename of the RDF file
     """
     def __init__(self, filename):
         self.conv = RDFtoHTMLConverter()
@@ -129,27 +136,18 @@ class CKANUploader(object):
                     objs.append(';' + obj['title'])
 
             extras.append({
-                'key': '_dcat_field_' + unicode(attribute['pred_link']) + ';' + attribute['pred_title'],
+                'key': '_dcat_field_' + unicode(attribute['pred_link']) +
+                       ';' + attribute['pred_title'],
                 'value': ';'.join(objs)
             })
 
         return extras
 
 
-def main(ckan_url, api_key, rdf_file):
-    uploader = CKANUploader(ckan_url, api_key)
-    uploader.update_datasets(rdf_file)
-
-
-def download_file(rdf_file):
-    dcat = requests.get(rdf_file)
-
-    _, filename = tempfile.mkstemp(suffix='.rdf')
-    with open(filename, 'w') as file_obj:
-        file_obj.write(dcat.content)
-    return filename
-
-if __name__ == '__main__':
+def main():
+    """
+    Run the uploader
+    """
     # Handle arguments
     parser = argparse.ArgumentParser(
         description='CKAN RDF uploader. Converts data from a RDF file '
@@ -171,12 +169,28 @@ if __name__ == '__main__':
         temp_file = True
     else:
         rdf_path = args.rdf_file
-    main(args.ckan_url, args.api_key, rdf_path)
+
+    uploader = CKANUploader(args.ckan_url, args.api_key)
+    uploader.update_datasets(rdf_path)
 
     if temp_file:
         os.remove(rdf_path)
 
 
+def download_file(rdf_file):
+    """
+    Download an RDF file from an URL
+    Args:
+        rdf_file: URL to the file
 
+    Returns: filename of the downloaded file
+    """
+    dcat = requests.get(rdf_file)
 
+    _, filename = tempfile.mkstemp(suffix='.rdf')
+    with open(filename, 'w') as file_obj:
+        file_obj.write(dcat.content)
+    return filename
 
+if __name__ == '__main__':
+    main()
