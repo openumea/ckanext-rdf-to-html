@@ -1,0 +1,6 @@
+License
+=======
+Copyright (c) 2015 Umeå Kommun
+
+This material is licensed under the European Union Public License (EUPL) v1.1
+whose full text can may be found at https://joinup.ec.europa.eu/community/eupl/og_page/european-union-public-licence-eupl-v11.
